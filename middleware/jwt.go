@@ -1,6 +1,8 @@
 package middleware
 
-var JwtKey = ""
+import "blogo/utils"
+
+var JwtKey = []byte(utils.JwtKey)
 
 // 生成token
 
