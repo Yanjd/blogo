@@ -15,6 +15,25 @@ type Article struct {
 	Img     string `gorm:"type:varchar(100)" json:"img"`
 }
 
+func GetArtInfo(id int) (Article, int) {
+	var art Article
+	err := db.Preload("Category").Where("id = ?", id).First(&art).Error
+	if err != nil {
+		return art, errmsg.ErrArtNotExist
+	}
+	return art, errmsg.SUCCESS
+}
+
+func GetArtForCate(id, pageSize, pageNum int) ([]Article, int) {
+	var arts []Article
+	err := db.Preload("Category").Limit(pageSize).Offset((pageNum-1)*pageSize).
+		Where("cid = ?", id).Find(&arts).Error
+	if err != nil {
+		return nil, errmsg.ErrCateNameNotExist
+	}
+	return arts, errmsg.SUCCESS
+}
+
 func CreateArt(data *Article) int {
 	err := db.Create(&data).Error
 	if err != nil {
@@ -23,13 +42,13 @@ func CreateArt(data *Article) int {
 	return errmsg.SUCCESS
 }
 
-func ListArts(pageSize, pageNum int) []Article {
+func ListArts(pageSize, pageNum int) ([]Article, int) {
 	var arts []Article
-	err := db.Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&arts).Error
-	if err != nil && err == gorm.ErrRecordNotFound {
-		return nil
+	err := db.Preload("Category").Limit(pageSize).Offset((pageNum - 1) * pageSize).Find(&arts).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, errmsg.ERROR
 	}
-	return arts
+	return arts, errmsg.SUCCESS
 }
 
 func UpdateArt(id int, art *Article) int {

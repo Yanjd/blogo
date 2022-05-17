@@ -12,12 +12,12 @@ const (
 	ErrTokenWrong    = 1006
 	ErrTokenFmtWrong = 1007
 	ErrUserFmtWrong  = 1008
-	// 2xxx - article
 
-	// 3xxx - category
+	ErrArtNotExist = 2001
 
-	ErrCateNameUsed = 1001
-	ErrCateFmtWrong = 1002
+	ErrCateNameUsed     = 3001
+	ErrCateFmtWrong     = 3002
+	ErrCateNameNotExist = 3003
 )
 
 var codeMsg = map[int]string{
@@ -30,6 +30,11 @@ var codeMsg = map[int]string{
 	ErrTokenRuntime:  "token expire",
 	ErrTokenWrong:    "token error",
 	ErrTokenFmtWrong: "token format error",
+	ErrArtNotExist:   "article not exist",
+
+	ErrCateNameUsed:     "category name existed",
+	ErrCateFmtWrong:     "category format error",
+	ErrCateNameNotExist: "category name not exist",
 }
 
 func GetErrMsg(code int) string {

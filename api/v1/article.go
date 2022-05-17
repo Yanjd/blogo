@@ -8,6 +8,38 @@ import (
 	"strconv"
 )
 
+func GetArtInfo(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	art, code := model.GetArtInfo(id)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": code,
+		"data":   art,
+		"msg":    errmsg.GetErrMsg(code),
+	})
+}
+
+func GetArtForCate(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Param("id"))
+	pageSize, _ := strconv.Atoi(c.Query("pagesize"))
+	pageNum, _ := strconv.Atoi(c.Query("pagenum"))
+	if pageSize == 0 {
+		pageSize = -1
+	}
+
+	if pageNum == 0 {
+		pageNum = -1
+	}
+
+	arts, code := model.GetArtForCate(id, pageSize, pageNum)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": code,
+		"data":   arts,
+		"msg":    errmsg.GetErrMsg(code),
+	})
+}
+
 func AddArt(c *gin.Context) {
 	var art model.Article
 	var code int
@@ -32,8 +64,8 @@ func ListArts(c *gin.Context) {
 		pageNum = -1
 	}
 
-	data := model.ListArts(pageSize, pageNum)
-	code := errmsg.SUCCESS
+	data, code := model.ListArts(pageSize, pageNum)
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": code,
 		"data":   data,
@@ -59,7 +91,7 @@ func UpdateArt(c *gin.Context) {
 // DeleteArt Delete
 func DeleteArt(c *gin.Context) {
 	var code = errmsg.SUCCESS
-	id, _ := strconv.Atoi(c.Query("id"))
+	id, _ := strconv.Atoi(c.Param("id"))
 
 	code = model.DeleteArt(id)
 	c.JSON(http.StatusOK, gin.H{
