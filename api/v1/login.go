@@ -34,7 +34,7 @@ func setToken(c *gin.Context, user model.User) {
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 100,
 			ExpiresAt: time.Now().Unix() + 604800,
-			Issuer: "Blogo"
+			Issuer:    "Blogo",
 		},
 	}
 
@@ -42,9 +42,9 @@ func setToken(c *gin.Context, user model.User) {
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
-			"status" : errmsg.ERROR,
-			"message" : errmsg.GetErrMsg(errmsg.ERROR),
-			"token" : token,
+			"status":  errmsg.ERROR,
+			"message": errmsg.GetErrMsg(errmsg.ERROR),
+			"token":   token,
 		})
 	}
 
