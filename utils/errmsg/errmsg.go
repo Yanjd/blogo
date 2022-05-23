@@ -12,6 +12,7 @@ const (
 	ErrTokenWrong    = 1006
 	ErrTokenFmtWrong = 1007
 	ErrUserFmtWrong  = 1008
+	ErrUserNoRight   = 1009
 
 	ErrArtNotExist = 2001
 
@@ -35,6 +36,7 @@ var codeMsg = map[int]string{
 	ErrCateNameUsed:     "category name existed",
 	ErrCateFmtWrong:     "category format error",
 	ErrCateNameNotExist: "category name not exist",
+	ErrUserNoRight:      "user has no right",
 }
 
 func GetErrMsg(code int) string {

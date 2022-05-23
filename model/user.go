@@ -2,8 +2,7 @@ package model
 
 import (
 	"blogo/utils/errmsg"
-	"encoding/base64"
-	"golang.org/x/crypto/scrypt"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"log"
 )
@@ -64,17 +63,12 @@ func DeleteUser(id int) int {
 }
 
 func ScryptPw(password string) string {
-	const keyLen = 10
-	salt := make([]byte, 8)
-	salt = []byte{12, 32, 88, 98, 34, 123, 255, 192}
-	key, err := scrypt.Key([]byte(password), salt, 16364, 8, 1, keyLen)
+	const cost = 10
+	HashPw, err := bcrypt.GenerateFromPassword([]byte(password), cost)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	pwd := base64.StdEncoding.EncodeToString(key)
-	return pwd
-
+	return string(HashPw)
 }
 
 func (u *User) BeforeCreate(_ *gorm.DB) (err error) {
@@ -85,4 +79,19 @@ func (u *User) BeforeCreate(_ *gorm.DB) (err error) {
 func (u *User) BeforeUpdate(_ *gorm.DB) (err error) {
 	u.Password = ScryptPw(u.Password)
 	return nil
+}
+
+func CheckLogin(username, password string) int {
+	var user User
+	db.Where("username = ?", username).First(&user)
+	if user.ID == 0 {
+		return errmsg.ErrUserNotExist
+	}
+	if bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return errmsg.ErrPasswordWrong
+	}
+	if user.Role != 0 {
+		return errmsg.ErrUserNoRight
+	}
+	return errmsg.SUCCESS
 }
